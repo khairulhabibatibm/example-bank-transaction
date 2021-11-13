@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: transaction-service
+  annotations:
+  {{- if and .Values.vcsInfo.repoUrl .Values.vcsInfo.branch }}
+    app.openshift.io/vcs-ref: {{ .Values.vcsInfo.branch }}
+    app.openshift.io/vcs-uri: {{ .Values.vcsInfo.repoUrl }}
+  {{- end }}
+  {{- if .Values.connectsTo }}
+    app.openshift.io/connects-to: {{ .Values.connectsTo }}
+  {{- end }}
+  labels:
+    app: transaction-service
+    version: {{ .Values.version }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: transaction-service
+  template:
+    metadata:
+      labels:
+        app: transaction-service
+    spec:
+      {{- if .Values.image.secretName }}
+      imagePullSecrets:
+        - name: {{ .Values.image.secretName }}
+      {{- end }}
+      containers:
+        - name: transaction-service
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+
+          ports:
+            - name: http
+              containerPort: {{ .Values.image.port }}
+              protocol: TCP
+          env:
+            - name: INGRESS_HOST
+              value: ""
+            - name: PROTOCOLS
+              value: ""
+            - name: LOG_LEVEL
+              value: {{ .Values.logLevel | quote }}
+          envFrom:
+            - secretRef:
+                name: bank-db-secret
+            - secretRef:
+                name: bank-oidc-secret
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
