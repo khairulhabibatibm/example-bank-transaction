@@ -153,9 +153,9 @@ public class TransactionResource extends BaseResource {
         }
     }
 
-    // TODO: require admin scope
     /**
      * This method updates a transaction.
+     * Require admin roles
      */
     @PUT
     @Path("reward/{transactionId}")
