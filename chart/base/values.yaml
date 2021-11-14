@@ -18,7 +18,7 @@ version: 0.0.1
 
 service:
   type: ClusterIP
-  port: 80
+  port: 9080
 
 route:
   enabled: false
