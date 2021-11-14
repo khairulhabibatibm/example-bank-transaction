@@ -11,7 +11,4 @@ spec:
     kind: Service
     name: {{ $fullName }}
     weight: 100
-  tls:
-    termination: edge
-  wildcardPolicy: None
 {{- end }}
