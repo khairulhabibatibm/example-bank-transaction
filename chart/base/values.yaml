@@ -12,8 +12,8 @@ image:
   pullPolicy: IfNotPresent
   port: 9080
 
-nameOverride: "user-service"
-fullnameOverride: "user-service"
+nameOverride: "transaction-service"
+fullnameOverride: "transaction-service"
 version: 0.0.1
 
 service:
